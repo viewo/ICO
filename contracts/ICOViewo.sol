@@ -1,6 +1,12 @@
 pragma solidity ^0.4.18;
 
-
+// ----------------------------------------------------------------------------
+//
+// VWO Viewo token public sale contract
+//
+// For details, please visit: www.viewo.com
+//
+// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 //
@@ -60,7 +66,7 @@ contract Owned {
     owner = msg.sender;
   }
 
-  function transferOwnership(address _newOwner) public onlyOwner {
+  function transferOwnership(address _newOwner) onlyOwner {
     require( _newOwner != owner );
     require( _newOwner != address(0x0) );
     OwnershipTransferProposed(owner, _newOwner);
@@ -121,7 +127,6 @@ contract ERC20Token is ERC20Interface, Owned {
   /* Total token supply */
 
   function totalSupply() constant returns (uint) {
-      
     return tokensIssuedTotal;
   }
 
@@ -229,9 +234,9 @@ contract ViewoToken is ERC20Token {
 
   /* Other ICO parameters */  
   
-  uint public constant TOKEN_SUPPLY_TOTAL = 500 * M1 * M1; // 500 mm tokens
-  uint public constant TOKEN_SUPPLY_ICO   = 320 * M1 * M1; // 320 mm tokens
-  uint public constant TOKEN_SUPPLY_MKT   =  80 * M1 * M1; //  80 mm tokens
+  uint public constant TOKEN_SUPPLY_TOTAL = 2000000000; // 2 billion - Total Token Supply
+  uint public constant TOKEN_SUPPLY_ICO   = 564062500; // 564,062,500 - Token Supply for Sale at ICO price
+  uint public constant TOKEN_SUPPLY_MKT   =  1435937500; // 1,435,937,500 - Total Supply Minus ICO
 
   uint public constant PRESALE_ETH_CAP =  15000 ether;
 
@@ -251,7 +256,6 @@ contract ViewoToken is ERC20Token {
   mapping(address => uint) public icoEtherContributed;
   mapping(address => uint) public icoTokensReceived;
 
-  
   // Events ---------------------------
   
   event WalletUpdated(address _newWallet);
@@ -260,14 +264,12 @@ contract ViewoToken is ERC20Token {
   event TokensMinted(address indexed _owner, uint _tokens, uint _balance);
   event TokensIssued(address indexed _owner, uint _tokens, uint _balance, uint _etherContributed);
   event Refund(address indexed _owner, uint _amount, uint _tokens);
-  
-  
 
   // Basic Functions ------------------
 
   /* Initialize (owner is set to msg.sender by Owned.Owned() */
 
-  function ViewoToken() public {
+  function ViewoToken() {
     require( TOKEN_SUPPLY_ICO + TOKEN_SUPPLY_MKT == TOKEN_SUPPLY_TOTAL );
     wallet = owner;
     adminWallet = owner;
@@ -275,7 +277,7 @@ contract ViewoToken is ERC20Token {
 
   /* Fallback */
   
-  function () public payable {
+  function () payable {
     buyTokens();
   }
   
@@ -283,24 +285,24 @@ contract ViewoToken is ERC20Token {
   
   /* What time is it? */
   
-  function atNow() public constant returns (uint) {
+  function atNow() constant returns (uint) {
     return now;
   }
-  
+ 
   
   /* Are tokens transferable? */
 
-  function isTransferable() public constant returns (bool transferable) {
+  function isTransferable() constant returns (bool transferable) {
      if ( atNow() < DATE_ICO_END ) return false;
      return true;
   }
   
-
+ 
   // Owner Functions ------------------
   
   /* Change the crowdsale wallet address */
 
-  function setWallet(address _wallet) public onlyOwner {
+  function setWallet(address _wallet) onlyOwner {
     require( _wallet != address(0x0) );
     wallet = _wallet;
     WalletUpdated(wallet);
@@ -308,7 +310,7 @@ contract ViewoToken is ERC20Token {
 
   /* Change the admin wallet address */
 
-  function setAdminWallet(address _wallet) public onlyOwner {
+  function setAdminWallet(address _wallet) onlyOwner {
     require( _wallet != address(0x0) );
     adminWallet = _wallet;
     AdminWalletUpdated(adminWallet);
@@ -316,13 +318,13 @@ contract ViewoToken is ERC20Token {
 
   /* Change tokensPerEth before ICO start */
   
-  function updateTokensPerEth(uint _tokensPerEth) public onlyOwner {
+  function updateTokensPerEth(uint _tokensPerEth) onlyOwner {
     require( atNow() < DATE_PRESALE_START );
     tokensPerEth = _tokensPerEth;
     TokensPerEthUpdated(_tokensPerEth);
   }
 
-  /* Minting of tokens by owner */
+  /* Minting of marketing tokens by owner */
 
   function mintToken(address _participant, uint _tokens) public onlyOwner {
     // check amount
@@ -338,10 +340,9 @@ contract ViewoToken is ERC20Token {
     TokensMinted(_participant, _tokens, balances[_participant]);
   }
 
-
   /* Transfer out any accidentally sent ERC20 tokens */
 
-  function transferAnyERC20Token(address tokenAddress, uint amount) public onlyOwner returns (bool success) {
+  function transferAnyERC20Token(address tokenAddress, uint amount) onlyOwner returns (bool success) {
       return ERC20Interface(tokenAddress).transfer(owner, amount);
   }
 
@@ -421,14 +422,13 @@ contract ViewoToken is ERC20Token {
       }
       else {
             return false;
-     }
+      }
       
   }
   
   /* Override "transferFrom" (ERC20) */
 
-  function transferFrom(address _from, address _to, uint _amount) public onlyOwner returns (bool success) {
-    
+  function transferFrom(address _from, address _to, uint _amount) public onlyOwner returns (bool success) {    
     if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && balances[_to] + _amount > balances[_to]) {
             balances[_to] += _amount;
             balances[_from] -= _amount;
@@ -438,8 +438,7 @@ contract ViewoToken is ERC20Token {
     }
     else {
         return false;
-    }
-    
+    }    
   }
-
+  
 }
