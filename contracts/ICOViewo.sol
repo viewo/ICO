@@ -208,7 +208,7 @@ contract ViewoToken is ERC20Token {
   /* Basic token data */
 
   string public constant name     = "Viewo Coin";
-  string public constant symbol   = "VWO";
+  string public constant symbol   = "VEO";
   uint8  public constant decimals = 18;
 
   /* Wallet addresses - initially set to owner at deployment */
@@ -218,19 +218,19 @@ contract ViewoToken is ERC20Token {
 
   /* ICO dates */
 
-  uint public constant DATE_PRESALE_START = 1517499000; // 01-Feb-2018 15:30 UTC
-  uint public constant DATE_PRESALE_END   = 1518103800; // 08-Feb-2018 15:30 UTC
+  uint public constant DATE_PRESALE_START = 1541808000; // 10-Nov-2018 00:00 UTC
+  uint public constant DATE_PRESALE_END   = 1544400000; // 10-Dec-2018 00:00 UTC
 
-  uint public constant DATE_ICO_START = 1519313400; // 22-Feb-2018 15:30 UTC
-  uint public constant DATE_ICO_END   = 1520523000; // 08-Mar-2018 15:30 UTC
+  uint public constant DATE_ICO_START = 1544486400; // 11-Dec-2018 00:00 UTC
+  uint public constant DATE_ICO_END   = 1547164800; // 11-Jan-2019 00:00 UTC
 
   /* ICO tokens per ETH */
   
   uint public tokensPerEth = 3200 * M1; // rate during last ICO week
 
   uint public constant BONUS_PRESALE      = 40;
-  uint public constant BONUS_ICO_WEEK_ONE = 20;
-  uint public constant BONUS_ICO_WEEK_TWO = 10;
+  uint public constant BONUS_ICO_WEEK_ONE = 0;
+  uint public constant BONUS_ICO_WEEK_TWO = 0;
 
   /* Other ICO parameters */  
   
