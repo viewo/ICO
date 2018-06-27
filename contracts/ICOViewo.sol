@@ -214,6 +214,34 @@ library SafeERC20 {
 }
 
 
+/**
+ * @title Burnable Token
+ * @dev Token that can be irreversibly burned (destroyed).
+ */
+contract BurnableToken is BasicToken {
+
+  event Burn(address indexed burner, uint256 value);
+
+  /**
+   * @dev Burns a specific amount of tokens.
+   * @param _value The amount of token to be burned.
+   */
+  function burn(uint256 _value) public {
+    _burn(msg.sender, _value);
+  }
+
+  function _burn(address _who, uint256 _value) internal {
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
+
+    balances[_who] = balances[_who].sub(_value);
+    totalSupply_ = totalSupply_.sub(_value);
+    emit Burn(_who, _value);
+    emit Transfer(_who, address(0), _value);
+  }
+}
+
 
 contract Owned {
     address public owner;
@@ -228,7 +256,7 @@ contract Owned {
     }
 }
 
-contract ViewoToken is StandardToken, Owned {
+contract ViewoToken is StandardToken,BurnableToken, Owned {
     string public constant name = "Viewo";
     string public constant symbol = "VEO";
     uint8 public constant decimals = 18;
@@ -244,12 +272,6 @@ contract ViewoToken is StandardToken, Owned {
     bool public saleClosed = false;
 
    
-    /// Only allowed to execute before the token sale is closed
-    modifier beforeEnd {
-        require(!saleClosed);
-        _;
-    }
-
     constructor(address _saleTokensAddress) public {
                     
         require(_saleTokensAddress != address(0));
@@ -264,8 +286,10 @@ contract ViewoToken is StandardToken, Owned {
         emit Transfer(address(0), saleTokensAddress, saleTokens);
     }
 
-    function close() public onlyOwner beforeEnd {
-        saleClosed = true;
+    
+    function close(bool _state) public onlyOwner returns (bool) {
+        saleClosed = _state;
+        return _state;
     }
 
     /// Requires the token sale to have closed
