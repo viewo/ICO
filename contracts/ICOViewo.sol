@@ -269,7 +269,7 @@ contract ViewoToken is StandardToken,BurnableToken, Owned {
 
 
     /// the trading will open when this is set to true
-    bool public saleClosed = false;
+    bool public saleClosed = true;
 
    
     constructor(address _saleTokensAddress) public {
